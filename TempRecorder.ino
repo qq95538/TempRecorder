@@ -8,25 +8,39 @@
 SerialCommand sCmd;     // The demo SerialCommand object
 SHT3x Sensor;
 Thread myThread = Thread();
+bool isRecording;
 // callback for myThread
 void niceCallback(){
+  if (isRecording){
     Serial.print(year());
-    Serial.print(second());
-    Serial.print("Temperature and Humidity: ");
-    Serial.print(Sensor.GetTemperature());
+    Serial.print("/");
+    Serial.print(month());
+    Serial.print("/");
+    Serial.print(day());
     Serial.print(" ");
+    Serial.print(hour());
+    Serial.print(":");
+    Serial.print(minute());
+    Serial.print(":");
+    Serial.print(second());
+    Serial.print(" ");
+    Serial.print(Sensor.GetTemperature());
+    Serial.print("oC");
+    Serial.print("|");
     Serial.print(Sensor.GetRelHumidity());
     Serial.println("%");
+  }
 }
 void setup() {
   pinMode(arduinoLED, OUTPUT);      // Configure the onboard LED for output
   digitalWrite(arduinoLED, LOW);    // default to LED off
+  isRecording = false;
   Serial.begin(19200);
   // Setup callbacks for SerialCommand commands
   sCmd.addCommand("ON",    LED_on);          // Turns LED on
   sCmd.addCommand("OFF",   LED_off);         // Turns LED off
   sCmd.addCommand("TEMP", Temp);        // Echos the string argument back
-  sCmd.addCommand("P",     processCommand);  // Converts two arguments to integers and echos them back.
+  sCmd.addCommand("CLOCK", setClock);  // Converts two arguments to integers and echos them back.
   sCmd.setDefaultHandler(unrecognized);      // Handler for command that isn't matched  (says "What?")
   Sensor.Begin();
   myThread.onRun(niceCallback);
@@ -42,10 +56,12 @@ void loop() {
 void LED_on() {
   Serial.println("LED on");
   digitalWrite(arduinoLED, HIGH);
+  isRecording = true;
 }
 void LED_off() {
   Serial.println("LED off");
   digitalWrite(arduinoLED, LOW);
+  isRecording = false;
 }
 void Temp() {
   char *arg;
@@ -57,30 +73,54 @@ void Temp() {
   else {
     Serial.print("Temperature and Humidity: ");
     Serial.print(Sensor.GetTemperature());
-    Serial.print(" ");
+    Serial.print("oC");
     Serial.print(Sensor.GetRelHumidity());
     Serial.println("%");
   }
 }
-void processCommand() {
+void setClock() {
   int aNumber;
+  int bNumber;
   char *arg;
-  Serial.println("We're in processCommand");
+  Serial.println("We're setting onboard RTC clock");
   arg = sCmd.next();
   if (arg != NULL) {
     aNumber = atoi(arg);    // Converts a char string to an integer
     Serial.print("First argument was: ");
     Serial.println(aNumber);
-    setTime(0,0,0,1,1,aNumber);
+    
   }
   else {
     Serial.println("No arguments");
   }
   arg = sCmd.next();
   if (arg != NULL) {
-    aNumber = atol(arg);
+    bNumber = atol(arg);
     Serial.print("Second argument was: ");
-    Serial.println(aNumber);
+    Serial.println(bNumber);
+    switch(aNumber){
+    case 1:
+      setTime(hour(),minute(),second(),day(),month(),bNumber);
+      break;
+    case 2:
+      setTime(hour(),minute(),second(),day(),bNumber,year());
+      break;
+    case 3:
+      setTime(hour(),minute(),second(),bNumber,month(),year());  
+      break;
+    case 4:
+      setTime(bNumber,minute(),second(),day(),month(),year());
+      break;  
+    case 5:
+      setTime(hour(),bNumber,second(),day(),month(),year());
+      break;
+    case 6:
+      setTime(hour(),minute(),bNumber,day(),month(),year());            
+      break;      
+    default:
+      Serial.println("command");
+      Serial.print(aNumber);
+    }
   }
   else {
     Serial.println("No second argument");
