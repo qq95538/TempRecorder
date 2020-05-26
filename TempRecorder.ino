@@ -18,6 +18,7 @@ SerialFlashFile file;
 void niceCallback(){
   if (isRecording){
     char buf[32];
+    digitalWrite(arduinoLED, HIGH);
     sprintf(buf, "%04d/%02d/%02d %02d:%02d:%02d %+03.1f %03.1f\r\n", year(),month(),day(),hour(),minute(),second(),Sensor.GetTemperature(),Sensor.GetRelHumidity());  
     file = SerialFlash.open(FileName);
     if(file){
@@ -29,6 +30,7 @@ void niceCallback(){
       Serial.print("Write file");
       Serial.print("Failed.");
     }
+    digitalWrite(arduinoLED, LOW);
   }
 }
 void setup() {
@@ -47,8 +49,8 @@ void setup() {
   else{
     Serial.println("2.Flash Chip Ready.");
   }
-  sCmd.addCommand("ON",    LED_on);          // Turns LED on
-  sCmd.addCommand("OFF",   LED_off);         // Turns LED off
+  sCmd.addCommand("ON",    LOG_on);          // Turns LED on
+  sCmd.addCommand("OFF",   LOG_off);         // Turns LED off
   sCmd.addCommand("TEMP", Temp);        // Echos the string argument back
   sCmd.addCommand("CLOCK", setClock);  // Converts two arguments to integers and echos them back.
   sCmd.addCommand("HELP", help);
@@ -67,14 +69,12 @@ void loop() {
   if(myThread.shouldRun())
     myThread.run();
 }
-void LED_on() {
-  Serial.println("LED on, Start logging...");
-  digitalWrite(arduinoLED, HIGH);
+void LOG_on() {
+  Serial.println("Start logging...");
   isRecording = true;
 }
-void LED_off() {
-  Serial.println("LED off, Stop logging.");
-  digitalWrite(arduinoLED, LOW);
+void LOG_off() {
+  Serial.println("Stop logging.");
   isRecording = false;
 }
 void Temp() {
@@ -156,6 +156,7 @@ void readData(){
 }
 
 void prepairFile(){
+  digitalWrite(arduinoLED, HIGH);
   //Create 'temp.txt' if it is not exist.
   if (!SerialFlash.exists(FileName)) {
     Serial.println("Creating file " + String(FileName));
@@ -169,9 +170,11 @@ void prepairFile(){
   Serial.print("temp.txt file size is ");
     Serial.println(file.size());   
   file.close();
+  digitalWrite(arduinoLED, LOW);
 }
 
 void removeFile(){
+  digitalWrite(arduinoLED, HIGH);
   if (!SerialFlash.exists(FileName)) {
     Serial.println("temp.txt is not existed.");
   }
@@ -182,6 +185,7 @@ void removeFile(){
     SerialFlash.remove(FileName);
     Serial.println("temp.txt is deleted.");
   }
+  digitalWrite(arduinoLED, LOW);
 }
 
 // This gets set as the default handler, and gets called when no other command matches.
