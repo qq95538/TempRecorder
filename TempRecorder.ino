@@ -7,24 +7,31 @@
 #include <CurieTime.h>
 bool isRecording;
 const char* FileName = "temp.txt";
-const int FileSize = 256;
+const int FileSize = 65536;
 const int arduinoLED = 13;   // Arduino LED on board
 SerialCommand sCmd;     // The demo SerialCommand object
 SHT3x Sensor;
 Thread myThread = Thread();
 SerialFlashFile file;
+int file_log_point; 
+int file_read_point;
 
 // callback for myThread
 void niceCallback(){
   if (isRecording){
     char buf[32];
     digitalWrite(arduinoLED, HIGH);
-    sprintf(buf, "%04d/%02d/%02d %02d:%02d:%02d %+03.1f %03.1f\r\n", year(),month(),day(),hour(),minute(),second(),Sensor.GetTemperature(),Sensor.GetRelHumidity());  
     file = SerialFlash.open(FileName);
     if(file){
+      file.seek(file_log_point*32);
+      sprintf(buf, "%04d/%02d/%02d %02d:%02d:%02d %+03.1f %03.1f\r\n", year(),month(),day(),hour(),minute(),second(),Sensor.GetTemperature(),Sensor.GetRelHumidity());  
+      Serial.print("current_positon->");
+      Serial.print(file.position());
+      Serial.print(":");
       file.write(buf, 32);
       file.close();
       Serial.print(buf);
+      file_log_point++;
     }
     else{
       Serial.print("Write file");
@@ -37,6 +44,8 @@ void setup() {
   pinMode(arduinoLED, OUTPUT);      // Configure the onboard LED for output
   digitalWrite(arduinoLED, LOW);    // default to LED off
   isRecording = false;
+  file_log_point = 0;
+  file_read_point = 0;
   Serial.begin(19200);
   while(!Serial);
   // Setup callbacks for SerialCommand commands
@@ -148,10 +157,30 @@ void readData(){
     aNumber = atoi(arg);    // Converts a char string to an integer
     Serial.print("First argument was: ");
     Serial.println(aNumber);
+    file_read_point = aNumber;   
   }
   else{
- 
-    Serial.println("No argument.");
+    const int buffer_length = 256;
+    char file_buffer[buffer_length];
+    digitalWrite(arduinoLED, HIGH);
+    if (!SerialFlash.exists(FileName)) {
+      Serial.println("No file " + String(FileName));
+    }
+    else{
+      Serial.println("File " + String(FileName) + " has already exists");
+      file = SerialFlash.open(FileName);
+      Serial.print("temp.txt file size is ");
+      Serial.println(file.size()); 
+      Serial.print("current_position->");
+      Serial.print(file_read_point*buffer_length);
+      Serial.println(":");
+      file.seek(file_read_point*buffer_length);
+      file.read(file_buffer, buffer_length);  
+      file.close();
+      Serial.println(String(file_buffer));
+      file_read_point++;     
+    }
+    digitalWrite(arduinoLED, LOW);  
   }
 }
 
@@ -168,8 +197,10 @@ void prepairFile(){
   }
   file = SerialFlash.open(FileName);
   Serial.print("temp.txt file size is ");
-    Serial.println(file.size());   
+  Serial.println(file.size());   
   file.close();
+  file_log_point = 0;
+  file_read_point = 0;
   digitalWrite(arduinoLED, LOW);
 }
 
@@ -185,6 +216,8 @@ void removeFile(){
     SerialFlash.remove(FileName);
     Serial.println("temp.txt is deleted.");
   }
+  file_log_point = 0;
+  file_read_point = 0;
   digitalWrite(arduinoLED, LOW);
 }
 
