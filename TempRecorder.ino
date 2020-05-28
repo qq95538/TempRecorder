@@ -98,6 +98,7 @@ void setup() {
   sCmd.addCommand("REC",    LOG_on);          // Turns LED on
   sCmd.addCommand("STOP",   LOG_off);         // Turns LED off
   sCmd.addCommand("TEMP", Temp);        // Echos the string argument back
+  sCmd.addCommand("POINTER", query_write_pointer); 
   sCmd.addCommand("CLOCK", setClock);  // Converts two arguments to integers and echos them back.
   sCmd.addCommand("HELP", help);
   sCmd.addCommand("NEW", prepairFile);
@@ -337,15 +338,24 @@ void formatSD(){
 
 }
 
+void query_write_pointer(){
+  Serial.println("XXXX(Data Logged)XXXX.__(Empty Space)___");
+  Serial.println("                     ^ ");
+  Serial.print("The current write_pointer is:");
+  Serial.println(write_pointer.ul);
+}
+
+
 // This gets set as the default handler, and gets called when no other command matches.
 void unrecognized(const char *command) {
-  Serial.println("What?");
+  Serial.println("Unknown command. Type HELP to study right ones.");
 }
 
 void help()
 {
   Serial.println("Commands List: ON start logging. OFF stop logging. ");
   Serial.println("TEMP Corrent temperature and moisture. ");
+  Serial.println("POINTER Query current write_pointer.");
   Serial.println("CLOCK 1/2/3/4/5/6 year/month/day/hour/minute/second to set time");
   Serial.println("NEW create, check, and prepare a 'temp.txt' file.");
   Serial.println("DEL detect, erase and remove/delete the file");
