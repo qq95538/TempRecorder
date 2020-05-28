@@ -84,7 +84,7 @@ void setup() {
   while(!Serial);
   Sensor.Begin();
   Serial.println("Sensor Ready.");
-  Serial.print("write_point->:");
+  Serial.print("write_pointer->:");
   Serial.println(write_pointer.ul); 
   Serial.print("error_code->:");
   Serial.println(error_code);
@@ -98,7 +98,7 @@ void setup() {
   sCmd.addCommand("REC",    LOG_on);          // Turns LED on
   sCmd.addCommand("STOP",   LOG_off);         // Turns LED off
   sCmd.addCommand("TEMP", Temp);        // Echos the string argument back
-  sCmd.addCommand("POINTER", query_write_pointer); 
+  sCmd.addCommand("POINT", query_write_pointer); 
   sCmd.addCommand("CLOCK", setClock);  // Converts two arguments to integers and echos them back.
   sCmd.addCommand("HELP", help);
   sCmd.addCommand("NEW", prepairFile);
@@ -235,7 +235,7 @@ void readData(){
       Serial.println(file.size()); 
       Serial.print("sector->");
       Serial.print(read_sector);
-      Serial.print(" write_point->");
+      Serial.print(" write_pointer->");
       Serial.print(read_sector*buffer_length/32);
       Serial.print(" current_position->");
       Serial.print(read_sector*buffer_length);
@@ -355,7 +355,7 @@ void help()
 {
   Serial.println("Commands List: ON start logging. OFF stop logging. ");
   Serial.println("TEMP Corrent temperature and moisture. ");
-  Serial.println("POINTER Query current write_pointer.");
+  Serial.println("POINT Query current write_pointer.");
   Serial.println("CLOCK 1/2/3/4/5/6 year/month/day/hour/minute/second to set time");
   Serial.println("NEW create, check, and prepare a 'temp.txt' file.");
   Serial.println("DEL detect, erase and remove/delete the file");
