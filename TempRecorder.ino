@@ -7,8 +7,6 @@
 #include <SerialCommand.h>
 #include <SHT3x.h>
 #include <CurieTime.h>
-
-bool isRecording;
 const char* FileName = "temp.txt";
 const int FileSize = 65536;
 const int arduinoLED = 13;   // Arduino LED on board
@@ -17,6 +15,9 @@ const int write_pointer_EEPROM_address_b = 129;
 const int write_pointer_EEPROM_address_c = 130;
 const int write_pointer_EEPROM_address_d = 131;
 const int period_EEPROM_address = 132;
+const int error_code_EEPROM_address = 133; 
+//error_code File_Save_Error_in_recording_thread 1
+//prepare_file error 2
 SerialCommand sCmd;     // The demo SerialCommand object
 SHT3x Sensor;
 Thread myThread = Thread();
@@ -32,29 +33,38 @@ union {
 } write_pointer; 
 unsigned long read_sector;
 int period;
+bool isRecording;
+short int error_code;
 
 // callback for myThread
 void niceCallback(){
   if (isRecording && (second()%period == 0)){
     char buf[32];
+    sprintf(buf, "%04d/%02d/%02d %02d:%02d:%02d %+03.1f %03.1f\r\n", year(),month(),day(),hour(),minute(),second(),Sensor.GetTemperature(),Sensor.GetRelHumidity());
     digitalWrite(arduinoLED, HIGH);
     file = SerialFlash.open(FileName);
-    if(file){
+    if(file){      
+      file.seek(write_pointer.ul*32);       
+      file.write(buf, 32);
+      file.close();
+      write_pointer.ul++;
       Serial.print("write_point->");
       Serial.print(write_pointer.ul);
-      file.seek(write_pointer.ul*32);
-      sprintf(buf, "%04d/%02d/%02d %02d:%02d:%02d %+03.1f %03.1f\r\n", year(),month(),day(),hour(),minute(),second(),Sensor.GetTemperature(),Sensor.GetRelHumidity());  
       Serial.print("|current_positon->");
       Serial.print(file.position());
       Serial.print(":");
-      file.write(buf, 32);
-      file.close();
       Serial.print(buf);
-      write_pointer.ul++;
     }
     else{
-      Serial.print("Write file");
-      Serial.print("Failed.");
+      Serial.println("Write file temp.txt Failed. Stop Recording...");
+      isRecording = false;
+      error_code = 1;
+      EEPROM.write(error_code_EEPROM_address, error_code); //error_code File_Save_Error_in_recording_thread 1
+      EEPROM.write(write_pointer_EEPROM_address_a, write_pointer.a);
+      EEPROM.write(write_pointer_EEPROM_address_b, write_pointer.b);
+      EEPROM.write(write_pointer_EEPROM_address_c, write_pointer.c);
+      EEPROM.write(write_pointer_EEPROM_address_d, write_pointer.d);
+      Serial.println("error_code and write_point has been saved.");
     }
     digitalWrite(arduinoLED, LOW);
   }
@@ -68,6 +78,7 @@ void setup() {
   write_pointer.c = EEPROM.read(write_pointer_EEPROM_address_c);
   write_pointer.d = EEPROM.read(write_pointer_EEPROM_address_d);
   period = EEPROM.read(period_EEPROM_address);
+  error_code = EEPROM.read(error_code_EEPROM_address);
   read_sector = 0;
   Serial.begin(19200);
   while(!Serial);
@@ -75,6 +86,8 @@ void setup() {
   Serial.println("Sensor Ready.");
   Serial.print("write_point->:");
   Serial.println(write_pointer.ul); 
+  Serial.print("error_code->:");
+  Serial.println(error_code);
   // Init. SPI Flash chip
   if (!SerialFlash.begin(ONBOARD_FLASH_SPI_PORT, ONBOARD_FLASH_CS_PIN)) {
     Serial.println("Unable to access SPI Flash chip.");
@@ -82,8 +95,8 @@ void setup() {
   else{
     Serial.println("Flash Chip Ready.");
   }
-  sCmd.addCommand("ON",    LOG_on);          // Turns LED on
-  sCmd.addCommand("OFF",   LOG_off);         // Turns LED off
+  sCmd.addCommand("REC",    LOG_on);          // Turns LED on
+  sCmd.addCommand("STOP",   LOG_off);         // Turns LED off
   sCmd.addCommand("TEMP", Temp);        // Echos the string argument back
   sCmd.addCommand("CLOCK", setClock);  // Converts two arguments to integers and echos them back.
   sCmd.addCommand("HELP", help);
@@ -91,13 +104,14 @@ void setup() {
   sCmd.addCommand("DEL", removeFile);
   sCmd.addCommand("READ", readData);
   sCmd.addCommand("INTERVAL", changeInterval);
+  sCmd.addCommand("FORMAT", formatSD);
   sCmd.setDefaultHandler(unrecognized);      // Handler for command that isn't matched  (says "What?")
   myThread.onRun(niceCallback);
   myThread.setInterval(1000); 
   Serial.println("Commands Handler Ready.");
   Serial.println("Type READ to check logged data.");
-  Serial.println("Type DEL, NEW and ON consequently to begin a new log.");
-  Serial.println("Type Type OFF to stop logging.");
+  Serial.println("Type DEL, NEW and REC consequently to begin a new log.");
+  Serial.println("Type Type STOP to finish logging and save the write_point.");
   Serial.println("Type CLOCK to check time.");
   Serial.println("Type HELP to learn more.");
    
@@ -120,7 +134,7 @@ void LOG_on() {
   }
 }
 void LOG_off() {
-  Serial.print("The write pointer is now at ->");
+  Serial.println("The write_pointer is now saving at:");
   isRecording = false;
   digitalWrite(arduinoLED, HIGH);
   EEPROM.write(write_pointer_EEPROM_address_a, write_pointer.a);
@@ -128,8 +142,8 @@ void LOG_off() {
   EEPROM.write(write_pointer_EEPROM_address_c, write_pointer.c);
   EEPROM.write(write_pointer_EEPROM_address_d, write_pointer.d);
   digitalWrite(arduinoLED, LOW);
-  Serial.print(write_pointer.ul);
-  Serial.println(". Stop logging and save write pointer. ");
+  Serial.println(write_pointer.ul);
+  Serial.println("saved write_pointer, Stopped logging.");
 }
 void Temp() {
   char *arg;
@@ -139,11 +153,10 @@ void Temp() {
     Serial.println(arg);
   }
   else {
-    Serial.print("Temperature and Humidity: ");
+    Serial.println("Temperature and Humidity: ");
     Serial.print(Sensor.GetTemperature());
-    Serial.print("oC");
-    Serial.print(Sensor.GetRelHumidity());
-    Serial.println("%");
+    Serial.print(" ");
+    Serial.println(Sensor.GetRelHumidity());
   }
 }
 void setClock() {
@@ -229,7 +242,7 @@ void readData(){
       file.seek(read_sector*buffer_length);
       file.read(file_buffer, buffer_length);  
       file.close();
-      Serial.println(String(file_buffer));
+      Serial.println(file_buffer);
       read_sector++;     
     }
     digitalWrite(arduinoLED, LOW);  
@@ -248,9 +261,15 @@ void prepairFile(){
     Serial.println("File " + String(FileName) + " has already exists");
   }
   file = SerialFlash.open(FileName);
-  Serial.print("temp.txt file size is ");
-  Serial.println(file.size());   
-  file.close();
+  if(file){
+    Serial.print("temp.txt file size is ");
+    Serial.println(file.size());   
+    file.close();
+  }
+  else{
+    error_code = 2; //prepare_file error 2
+    EEPROM.write(error_code_EEPROM_address, error_code);
+  }
   write_pointer.ul = 0;
   read_sector = 0;
   EEPROM.write(write_pointer_EEPROM_address_a, write_pointer.a);
@@ -278,6 +297,8 @@ void removeFile(){
   EEPROM.write(write_pointer_EEPROM_address_b, write_pointer.b);
   EEPROM.write(write_pointer_EEPROM_address_c, write_pointer.c);
   EEPROM.write(write_pointer_EEPROM_address_d, write_pointer.d);
+  error_code = 0; //repair error by delete file
+  EEPROM.write(error_code_EEPROM_address, error_code);
   digitalWrite(arduinoLED, LOW);
 }
 
@@ -302,6 +323,20 @@ void changeInterval(){
   digitalWrite(arduinoLED, LOW);
 }
 
+void formatSD(){
+  Serial.println("wait, 30 seconds to 2 minutes for most chips...");
+  digitalWrite(arduinoLED, HIGH);
+  SerialFlash.eraseAll();
+  while (SerialFlash.ready() == false) {
+   // wait, 30 seconds to 2 minutes for most chips
+  }
+  error_code = 0; //repair error by format
+  EEPROM.write(error_code_EEPROM_address, error_code);
+  digitalWrite(arduinoLED, LOW);
+  Serial.println("ok.");
+
+}
+
 // This gets set as the default handler, and gets called when no other command matches.
 void unrecognized(const char *command) {
   Serial.println("What?");
@@ -314,11 +349,12 @@ void help()
   Serial.println("CLOCK 1/2/3/4/5/6 year/month/day/hour/minute/second to set time");
   Serial.println("NEW create, check, and prepare a 'temp.txt' file.");
   Serial.println("DEL detect, erase and remove/delete the file");
-  Serial.println("ON Start logging temperature and moisture to the file");
-  Serial.println("OFF Stop logging temperature and moisture to the file");
+  Serial.println("FORMAT your sd_card if you failed logging data after you tried DEL,NEW,REC commands sequence."); 
+  Serial.println("REC begin logging temperature and moisture to the file");
+  Serial.println("STOP finish logging temperature and moisture to the file");
   Serial.println("READ read a section of logged temp and moisture data, and move the portion to next section.");
-  Serial.println("READ (parameter1) move the portion to the defined parameter1. Example READ 0, READ 1, READ 2"); 
-  Serial.println("INTERVAL (parameter1), change log interval time to parameter1 millisecond every logging cycle"); 
+  Serial.println("READ (parameter1) move the portion to the defined parameter1. Example READ 0, READ 1, READ 2."); 
+  Serial.println("INTERVAL (parameter1), change log interval time to parameter1 millisecond every logging cycle."); 
 }
 
 
