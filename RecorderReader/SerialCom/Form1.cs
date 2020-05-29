@@ -16,7 +16,7 @@ namespace SerialCom
 
     public partial class MainForm : Form
     {
-
+        public delegate void InvokeSerialSendText(String sText);
         //实例化串口对象
         SerialPort serialPort = new SerialPort();
 
@@ -275,21 +275,26 @@ namespace SerialCom
         private void SetClock(){
             System.DateTime currentTime = new System.DateTime();
             currentTime = System.DateTime.Now;
-            try
-            {
-                serialPort.WriteLine("CLOCK " + currentTime.Year
+            InvokeSerialSendText invokeSerialSendText = new InvokeSerialSendText(SendTextToSerial);
+            this.BeginInvoke(invokeSerialSendText, new Object[] { "CLOCK " + currentTime.Year
                     + " " + currentTime.Month
                     + " " + currentTime.Day
                     + " " + currentTime.Hour
                     + " " + currentTime.Minute
-                    + " " + currentTime.Second);
+                    + " " + currentTime.Second });
+        }
+
+        private void SendTextToSerial(String iText)
+        {
+            try
+            {
+                serialPort.WriteLine(iText);
             }
             catch (System.Exception ex)
             {
                 MessageBox.Show(ex.Message, "Serial error when sending a command");
                 return;
             }
-
         }
 
         private void OpenSerial()
