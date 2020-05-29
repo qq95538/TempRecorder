@@ -163,48 +163,24 @@ void Temp() {
   }
 }
 void setClock() {
-  int aNumber;
-  int bNumber;
+  int iArg[6] = {};
+  int i = 0;
   char *arg;
+  char buf[20];
   arg = sCmd.next();
-  if (arg != NULL) {
-    aNumber = atoi(arg);    // Converts a char string to an integer
-    Serial.print("First argument was: ");
-    Serial.println(aNumber);
-    arg = sCmd.next();
-    if (arg != NULL) {
-      bNumber = atol(arg);
-      Serial.print("Second argument was: ");
-      Serial.println(bNumber);
-      switch(aNumber){
-      case 1:
-        setTime(hour(),minute(),second(),day(),month(),bNumber);
-        break;
-      case 2:
-        setTime(hour(),minute(),second(),day(),bNumber,year());
-        break;
-      case 3:
-        setTime(hour(),minute(),second(),bNumber,month(),year());  
-        break;
-      case 4:
-        setTime(bNumber,minute(),second(),day(),month(),year());
-        break;  
-      case 5:
-        setTime(hour(),bNumber,second(),day(),month(),year());
-        break;
-      case 6:
-        setTime(hour(),minute(),bNumber,day(),month(),year());            
-        break;      
-      default:
-        Serial.println("set time command OK");
-      }
-    }
-    else {
-      Serial.println("Set Time Command has not second argument");
-    }   
+  if(arg != NULL){
+    do{
+        if(arg != NULL) iArg[i] = atoi(arg);
+        arg = sCmd.next();
+        i++;
+    }while(arg != NULL && i < 6);
+    //setTime(hour,minute,second,day,month,year);
+    setTime(iArg[3],iArg[4],iArg[5], iArg[2],iArg[1],iArg[0]); 
+    Serial.print("Time is set to:");
+    sprintf(buf, "%04d/%02d/%02d %02d:%02d:%02d", year(),month(),day(),hour(),minute(),second());
+    Serial.println(buf);
   }
   else {    
-    char buf[20];
     Serial.print("Time now on RTC clock is:");
     sprintf(buf, "%04d/%02d/%02d %02d:%02d:%02d", year(),month(),day(),hour(),minute(),second());
     Serial.println(buf);

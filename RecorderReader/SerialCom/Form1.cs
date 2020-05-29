@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -116,7 +117,7 @@ namespace SerialCom
         private void dataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             try
-            {    
+            {
                 String input = "";
                 do {
                     input = serialPort.ReadLine();
@@ -131,11 +132,11 @@ namespace SerialCom
                     saveDataFS.Write(info, 0, info.Length);
                 }
             }
-            catch(System.Exception ex)
+            catch (System.Exception ex)
             {
                 MessageBox.Show(ex.Message, "Serial error");
                 return;
-            }         
+            }
         }
 
         //发送数据
@@ -144,7 +145,7 @@ namespace SerialCom
             try
             {
                 serialPort.WriteLine(textBoxSend.Text.Trim());
-            } 
+            }
             catch (System.Exception ex)
             {
                 MessageBox.Show(ex.Message, "Serial error when sending a command");
@@ -180,7 +181,7 @@ namespace SerialCom
         {
             comboBoxCom.Text = "";
             comboBoxCom.Items.Clear();
-            
+
             string[] str = SerialPort.GetPortNames();
             if (str == null)
             {
@@ -264,8 +265,45 @@ namespace SerialCom
 
         private void Asyncbutton_Click(object sender, EventArgs e)
         {
-            OpenSerial();
-            CloseSerial();
+            
+            ThreadStart threadstartSetClock = new ThreadStart(SetClock);
+            Thread threadSetClock = new Thread(threadstartSetClock);
+            threadSetClock.Start();
+        }
+
+        private void SetClock(){
+            System.DateTime currentTime = new System.DateTime();
+            currentTime = System.DateTime.Now;
+            try
+            {
+                serialPort.WriteLine("CLOCK 1 " + currentTime.Year);
+                Thread.Sleep(1000);
+                serialPort.WriteLine("CLOCK 2 " + currentTime.Month);
+                Thread.Sleep(1000);
+                serialPort.WriteLine("CLOCK");
+                Thread.Sleep(1000);
+                serialPort.WriteLine("CLOCK 3 " + currentTime.Day);
+                Thread.Sleep(1000);
+                serialPort.WriteLine("CLOCK");
+                Thread.Sleep(1000);
+                serialPort.WriteLine("CLOCK 4 " + currentTime.Hour);
+                Thread.Sleep(1000);
+                serialPort.WriteLine("CLOCK");
+                Thread.Sleep(1000);
+                serialPort.WriteLine("CLOCK 5 " + currentTime.Minute);
+                Thread.Sleep(1000);
+                serialPort.WriteLine("CLOCK");
+                Thread.Sleep(1000);
+                serialPort.WriteLine("CLOCK 6 " + currentTime.Second);
+                Thread.Sleep(1000);
+                serialPort.WriteLine("CLOCK");
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Serial error when sending a command");
+                return;
+            }
+
         }
 
         private void OpenSerial()

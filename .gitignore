@@ -14,3 +14,8 @@ RecorderReader/SerialCom/obj/x64/Debug/SerialCom.csproj.GenerateResource.cache
 RecorderReader/SerialCom/obj/x64/Debug/SerialCom.csprojAssemblyReference.cache
 RecorderReader/SerialCom/obj/x64/Debug/SerialCom.exe
 RecorderReader/SerialCom/obj/x64/Debug/SerialCom.pdb
+RecorderReader/SerialCom/bin/x64/Debug/SerialCom.pdb
+*.exe
+*.cache
+RecorderReader/SerialCom/obj/x64/Debug/SerialCom.exe
+RecorderReader/SerialCom/obj/x64/Debug/SerialCom.pdb
