@@ -376,6 +376,7 @@
             // 
             // AsyncButton
             // 
+            this.AsyncButton.Enabled = false;
             this.AsyncButton.Location = new System.Drawing.Point(12, 377);
             this.AsyncButton.Name = "AsyncButton";
             this.AsyncButton.Size = new System.Drawing.Size(210, 43);

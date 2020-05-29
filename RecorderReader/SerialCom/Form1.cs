@@ -111,6 +111,7 @@ namespace SerialCom
         private void buttonOpenCloseCom_Click(object sender, EventArgs e)
         {
             OpenSerial();
+            AsyncButton.Enabled = true;
         }
 
         //接收数据
@@ -276,27 +277,12 @@ namespace SerialCom
             currentTime = System.DateTime.Now;
             try
             {
-                serialPort.WriteLine("CLOCK 1 " + currentTime.Year);
-                Thread.Sleep(1000);
-                serialPort.WriteLine("CLOCK 2 " + currentTime.Month);
-                Thread.Sleep(1000);
-                serialPort.WriteLine("CLOCK");
-                Thread.Sleep(1000);
-                serialPort.WriteLine("CLOCK 3 " + currentTime.Day);
-                Thread.Sleep(1000);
-                serialPort.WriteLine("CLOCK");
-                Thread.Sleep(1000);
-                serialPort.WriteLine("CLOCK 4 " + currentTime.Hour);
-                Thread.Sleep(1000);
-                serialPort.WriteLine("CLOCK");
-                Thread.Sleep(1000);
-                serialPort.WriteLine("CLOCK 5 " + currentTime.Minute);
-                Thread.Sleep(1000);
-                serialPort.WriteLine("CLOCK");
-                Thread.Sleep(1000);
-                serialPort.WriteLine("CLOCK 6 " + currentTime.Second);
-                Thread.Sleep(1000);
-                serialPort.WriteLine("CLOCK");
+                serialPort.WriteLine("CLOCK " + currentTime.Year
+                    + " " + currentTime.Month
+                    + " " + currentTime.Day
+                    + " " + currentTime.Hour
+                    + " " + currentTime.Minute
+                    + " " + currentTime.Second);
             }
             catch (System.Exception ex)
             {
@@ -395,13 +381,14 @@ namespace SerialCom
                 comboBoxStopBit.Enabled = true;
                 buttonSendData.Enabled = false;
                 Button_Refresh.Enabled = true;
+                AsyncButton.Enabled = false;
                 buttonOpenCloseCom.Text = "连接记录仪";
                 if (saveDataFS != null)
                 {
                     saveDataFS.Close(); // 关闭文件
                     saveDataFS = null;//释放文件句柄
                 }
-            }
+            }    
         }
 
         private void CloseSerialButton_Click(object sender, EventArgs e)

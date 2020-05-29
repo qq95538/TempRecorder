@@ -176,9 +176,9 @@ void setClock() {
     }while(arg != NULL && i < 6);
     //setTime(hour,minute,second,day,month,year);
     setTime(iArg[3],iArg[4],iArg[5], iArg[2],iArg[1],iArg[0]); 
-    Serial.print("Time is set to:");
-    sprintf(buf, "%04d/%02d/%02d %02d:%02d:%02d", year(),month(),day(),hour(),minute(),second());
-    Serial.println(buf);
+    Serial.println("Time is set.");
+    //sprintf(buf, "%04d/%02d/%02d %02d:%02d:%02d", year(),month(),day(),hour(),minute(),second());
+    //Serial.println(buf);
   }
   else {    
     Serial.print("Time now on RTC clock is:");
