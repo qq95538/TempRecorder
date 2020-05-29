@@ -288,7 +288,7 @@
             this.buttonOpenCloseCom.Name = "buttonOpenCloseCom";
             this.buttonOpenCloseCom.Size = new System.Drawing.Size(210, 44);
             this.buttonOpenCloseCom.TabIndex = 3;
-            this.buttonOpenCloseCom.Text = "打开记录仪";
+            this.buttonOpenCloseCom.Text = "连接记录仪";
             this.buttonOpenCloseCom.UseVisualStyleBackColor = true;
             this.buttonOpenCloseCom.Click += new System.EventHandler(this.buttonOpenCloseCom_Click);
             // 
@@ -370,8 +370,9 @@
             this.CloseSerialButton.Name = "CloseSerialButton";
             this.CloseSerialButton.Size = new System.Drawing.Size(210, 54);
             this.CloseSerialButton.TabIndex = 17;
-            this.CloseSerialButton.Text = "关闭连接";
+            this.CloseSerialButton.Text = "断开记录仪";
             this.CloseSerialButton.UseVisualStyleBackColor = true;
+            this.CloseSerialButton.Click += new System.EventHandler(this.CloseSerialButton_Click);
             // 
             // AsyncButton
             // 

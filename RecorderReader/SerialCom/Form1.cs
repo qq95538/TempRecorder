@@ -265,6 +265,7 @@ namespace SerialCom
         private void Asyncbutton_Click(object sender, EventArgs e)
         {
             OpenSerial();
+            CloseSerial();
         }
 
         private void OpenSerial()
@@ -332,7 +333,7 @@ namespace SerialCom
                     comboBoxStopBit.Enabled = false;
                     buttonSendData.Enabled = true;
                     Button_Refresh.Enabled = false;
-                    buttonOpenCloseCom.Text = "关闭串口";
+                    buttonOpenCloseCom.Text = "记录仪已连接";
                 }
                 catch (System.Exception ex)
                 {
@@ -340,8 +341,13 @@ namespace SerialCom
                     return;
                 }
             }
-            else //串口处于打开状态
+        }
+
+        private void CloseSerial()
+        {
+            if (serialPort.IsOpen)//串口处于关闭状态
             {
+
                 serialPort.Close();//关闭串口
                 //串口关闭时设置有效
                 comboBoxCom.Enabled = true;
@@ -351,13 +357,18 @@ namespace SerialCom
                 comboBoxStopBit.Enabled = true;
                 buttonSendData.Enabled = false;
                 Button_Refresh.Enabled = true;
-                buttonOpenCloseCom.Text = "打开串口";
+                buttonOpenCloseCom.Text = "连接记录仪";
                 if (saveDataFS != null)
                 {
                     saveDataFS.Close(); // 关闭文件
                     saveDataFS = null;//释放文件句柄
                 }
             }
+        }
+
+        private void CloseSerialButton_Click(object sender, EventArgs e)
+        {
+            CloseSerial();
         }
     }
 }

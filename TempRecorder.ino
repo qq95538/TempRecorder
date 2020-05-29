@@ -88,6 +88,8 @@ void setup() {
   Serial.println(write_pointer.ul); 
   Serial.print("error_code->:");
   Serial.println(error_code);
+  Serial.print("period->:");
+  Serial.println(period);  
   // Init. SPI Flash chip
   if (!SerialFlash.begin(ONBOARD_FLASH_SPI_PORT, ONBOARD_FLASH_CS_PIN)) {
     Serial.println("Unable to access SPI Flash chip.");
@@ -104,7 +106,7 @@ void setup() {
   sCmd.addCommand("NEW", prepairFile);
   sCmd.addCommand("DEL", removeFile);
   sCmd.addCommand("READ", readData);
-  sCmd.addCommand("INTERVAL", changeInterval);
+  sCmd.addCommand("PERIOD", changePeriod);
   sCmd.addCommand("FORMAT", formatSD);
   sCmd.setDefaultHandler(unrecognized);      // Handler for command that isn't matched  (says "What?")
   myThread.onRun(niceCallback);
@@ -303,7 +305,7 @@ void removeFile(){
   digitalWrite(arduinoLED, LOW);
 }
 
-void changeInterval(){
+void changePeriod(){
   int aNumber;
   char *arg;
   arg = sCmd.next();
@@ -317,7 +319,7 @@ void changeInterval(){
     
   }
   else {
-    Serial.print("Current log interval time(seconds): ");
+    Serial.print("Current log period time(seconds): ");
     period = EEPROM.read(period_EEPROM_address);
     Serial.println(period);
   }
@@ -353,18 +355,16 @@ void unrecognized(const char *command) {
 
 void help()
 {
-  Serial.println("Commands List: ON start logging. OFF stop logging. ");
+  Serial.println("Commands List: REC start logging. STOP stop logging. ");
   Serial.println("TEMP Corrent temperature and moisture. ");
   Serial.println("POINT Query current write_pointer.");
   Serial.println("CLOCK 1/2/3/4/5/6 year/month/day/hour/minute/second to set time");
-  Serial.println("NEW create, check, and prepare a 'temp.txt' file.");
-  Serial.println("DEL detect, erase and remove/delete the file");
+  Serial.println("NEW create a new 'temp.txt' file.");
+  Serial.println("DEL erase current file 'temp.txt' ");
   Serial.println("FORMAT your sd_card if you failed logging data after you tried DEL,NEW,REC commands sequence."); 
-  Serial.println("REC begin logging temperature and moisture to the file");
-  Serial.println("STOP finish logging temperature and moisture to the file");
   Serial.println("READ read a section of logged temp and moisture data, and move the portion to next section.");
   Serial.println("READ (parameter1) move the portion to the defined parameter1. Example READ 0, READ 1, READ 2."); 
-  Serial.println("INTERVAL (parameter1), change log interval time to parameter1 millisecond every logging cycle."); 
+  Serial.println("PERIOD (parameter1), change log interval time (second) every logging period."); 
 }
 
 
