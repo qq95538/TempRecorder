@@ -1,0 +1,10 @@
+C:\Users\19080\Documents\GitHub\TempRecorder\RecorderReader\SerialCom\bin\x64\Debug\SerialCom.exe.config
+C:\Users\19080\Documents\GitHub\TempRecorder\RecorderReader\SerialCom\bin\x64\Debug\SerialCom.exe
+C:\Users\19080\Documents\GitHub\TempRecorder\RecorderReader\SerialCom\bin\x64\Debug\SerialCom.pdb
+C:\Users\19080\Documents\GitHub\TempRecorder\RecorderReader\SerialCom\obj\x64\Debug\SerialCom.csprojAssemblyReference.cache
+C:\Users\19080\Documents\GitHub\TempRecorder\RecorderReader\SerialCom\obj\x64\Debug\SerialCom.MainForm.resources
+C:\Users\19080\Documents\GitHub\TempRecorder\RecorderReader\SerialCom\obj\x64\Debug\SerialCom.Properties.Resources.resources
+C:\Users\19080\Documents\GitHub\TempRecorder\RecorderReader\SerialCom\obj\x64\Debug\SerialCom.csproj.GenerateResource.cache
+C:\Users\19080\Documents\GitHub\TempRecorder\RecorderReader\SerialCom\obj\x64\Debug\SerialCom.csproj.CoreCompileInputs.cache
+C:\Users\19080\Documents\GitHub\TempRecorder\RecorderReader\SerialCom\obj\x64\Debug\SerialCom.exe
+C:\Users\19080\Documents\GitHub\TempRecorder\RecorderReader\SerialCom\obj\x64\Debug\SerialCom.pdb
