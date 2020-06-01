@@ -15,24 +15,35 @@ using System.Windows.Forms;
 namespace SerialCom
 {
 
+    struct LogLine
+    {
+        public int index;
+        public DateTime time;
+        public float temperature;
+        public float moisture;
+    }
     public partial class MainForm : Form
     {
         public static AutoResetEvent autoReadDataConfirmedEvent = new AutoResetEvent(false);
         public delegate void InvokeSerialSendText(String sText);
-        public delegate void InvokeRefreshData(String sText);
+        public delegate void InvokeRefreshData(int index, DateTime time, float temperature, float moisture);
         public delegate void InvokeLockReadDataButton(bool bLockButton);
+        public delegate void InvokeAdjustChart();
         //实例化串口对象
         SerialPort serialPort = new SerialPort();
 
         String saveDataFile = null;
         FileStream saveDataFS = null;
         List<String> listString;
-        
+        List<LogLine> listLogLine;
+        int current_log;
 
         public MainForm()
         {
             InitializeComponent();
             listString = new List<String>();
+            listLogLine = new List<LogLine>();
+            current_log = 0;
         }
 
 
@@ -117,7 +128,7 @@ namespace SerialCom
         private void buttonOpenCloseCom_Click(object sender, EventArgs e)
         {
             OpenSerial();
-            AsyncButton.Enabled = true;
+            asynTimeToolStripMenuItem.Enabled = true;
         }
 
         //接收数据
@@ -129,7 +140,7 @@ namespace SerialCom
                 do {
                     input = serialPort.ReadLine();
                     listString.Add(input);
-                    textBoxReceive.Text += input + "\r\n";
+                    textBoxReceive.Text = input + "\r\n";
                 } while (serialPort.BytesToRead > 0);
 
                 autoReadDataConfirmedEvent.Set();
@@ -274,12 +285,7 @@ namespace SerialCom
             }
         }
 
-        private void Asyncbutton_Click(object sender, EventArgs e)
-        {
-            Thread threadSetClock = new Thread(new ThreadStart(SetClock));
-            threadSetClock.Start();
-            
-        }
+
 
         private void SetClock()
         {
@@ -401,7 +407,7 @@ namespace SerialCom
                 comboBoxStopBit.Enabled = true;
                 buttonSendData.Enabled = false;
                 Button_Refresh.Enabled = true;
-                AsyncButton.Enabled = false;
+                asynTimeToolStripMenuItem.Enabled = false;
                 buttonOpenCloseCom.Text = "连接记录仪";
                 if (saveDataFS != null)
                 {
@@ -418,6 +424,9 @@ namespace SerialCom
 
         private void ReadDataButton_Click(object sender, EventArgs e)
         {
+            listString.Clear();
+            listLogLine.Clear();
+            
             Thread threadReadData = new Thread(new ThreadStart(readData));
             threadReadData.Start();
             
@@ -441,9 +450,6 @@ namespace SerialCom
                 {
                     string[] parts = result.Split(':');
                     read_pointer = Convert.ToInt32(parts[1]);
-                    InvokeRefreshData invokeRefreshData = new InvokeRefreshData(refreshData);
-                    this.BeginInvoke(invokeRefreshData, new object[] { "记录仪有" + read_pointer.ToString() + "条信息" });
-
                     this.BeginInvoke(invokeSerialSendText, new Object[] { "READ 0" });
                     if (autoReadDataConfirmedEvent.WaitOne())
                     {
@@ -462,23 +468,25 @@ namespace SerialCom
                                 string[] log_parts = s.Split(' ');
                                 if (log_parts.Count() >= 4)
                                 {
-                                    System.DateTime logTime = new System.DateTime();
-                                    logTime = Convert.ToDateTime(log_parts[0] + " " + log_parts[1]);
-                                    float temperature = Convert.ToSingle(log_parts[2]);
-                                    float moisture = Convert.ToSingle(log_parts[3]);
-
-                                    InvokeRefreshData invokeRefreshData2 = new InvokeRefreshData(refreshData);
-                                    this.BeginInvoke(invokeRefreshData2, new object[] { "Line " + count + "->" + logTime.ToString() + temperature.ToString() + " " + moisture.ToString() });
+                                    LogLine line = new LogLine();
+                                    line.index = count;
+                                    line.time = Convert.ToDateTime(log_parts[0] + " " + log_parts[1]);
+                                    line.temperature = Convert.ToSingle(log_parts[2]);
+                                    line.moisture = Convert.ToSingle(log_parts[3]);
+                                    listLogLine.Add(line);
+                                    InvokeRefreshData invokeRefreshData = new InvokeRefreshData(refreshData);
+                                    this.BeginInvoke(invokeRefreshData, new object[] {line.index, line.time, line.temperature, line.moisture});
                                 }
                             }
                             listString.Clear();
-                            
                         }
-                    }
-                    
+                    }                    
                 }                
             }
             this.BeginInvoke(invokeLockReadDataButton, new Object[] { false });
+            InvokeAdjustChart invokeAdjustChart = new InvokeAdjustChart(adjustChart);
+            this.BeginInvoke(invokeAdjustChart, new object[] {});
+            
         }
 
         private void lockReadDataButton(bool bLockButton) 
@@ -487,11 +495,60 @@ namespace SerialCom
             ReadDataButton.Enabled = !bLockButton;
         }
 
-        private void refreshData(String sText)
-        {       
-            richTextBox1.Text += sText + "\r\n";
-            richTextBox1.SelectionStart = richTextBox1.Text.Length;
-            richTextBox1.ScrollToCaret();//滚动到光标处
-        } 
+        private void refreshData(int index, DateTime time, float temperature, float moisture)
+        {      
+            chart1.Series[0].Points.AddXY(index, temperature);
+            chart2.Series[0].Points.AddXY(index, moisture);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+            
+            chart1.Series[0].Points.AddXY(listLogLine[current_log].index, listLogLine[current_log++].temperature);
+        }
+
+        private void chart1_Click(object sender, EventArgs e)
+        {
+            adjustChart();
+        }
+
+        void adjustChart()
+        {
+            int min_temperature;
+            int min_moisture;
+            if (listLogLine == null)
+            {
+                min_temperature = 25;
+                min_moisture = 50;
+            }
+            else
+            {
+                min_temperature = Convert.ToInt32(listLogLine[0].temperature);
+                min_moisture = Convert.ToInt32(listLogLine[0].moisture);
+            }
+            min_temperature = listLogLine.Aggregate(min_temperature, (acc, x) => Math.Min(acc, Convert.ToInt32(x.temperature)));
+            min_moisture = listLogLine.Aggregate(min_moisture, (acc, x) => Math.Min(acc, Convert.ToInt32(x.moisture)));
+            chart1.ChartAreas[0].AxisY.Minimum = min_temperature;
+            chart2.ChartAreas[0].AxisY.Minimum = min_moisture;
+            label8.Text = "取回记录共计： " + listLogLine.Count + "条";
+
+        }
+
+        private void chart2_Click(object sender, EventArgs e)
+        {
+            adjustChart();
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void asynTimeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Thread threadSetClock = new Thread(new ThreadStart(SetClock));
+            threadSetClock.Start();
+        }
     }
 }

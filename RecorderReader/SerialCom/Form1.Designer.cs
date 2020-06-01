@@ -29,6 +29,12 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.MenuFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,6 +48,7 @@
             this.AuthorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ContributorSylvesterLiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.groupBoxSerialPortSetting = new System.Windows.Forms.GroupBox();
             this.comboBoxStopBit = new System.Windows.Forms.ComboBox();
             this.comboBoxCheckBit = new System.Windows.Forms.ComboBox();
@@ -62,12 +69,19 @@
             this.buttonSendData = new System.Windows.Forms.Button();
             this.ReadDataButton = new System.Windows.Forms.Button();
             this.CloseSerialButton = new System.Windows.Forms.Button();
-            this.AsyncButton = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.chart2 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.asynTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label8 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
             this.groupBoxSerialPortSetting.SuspendLayout();
             this.groupBoxSendData.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chart2)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -80,7 +94,7 @@
             this.MenuIHelp});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1177, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1177, 30);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -90,7 +104,7 @@
             this.SaveReceiveDataToFileToolStripMenuItem,
             this.ExitToolStripMenuItem});
             this.MenuFile.Name = "MenuFile";
-            this.MenuFile.Size = new System.Drawing.Size(53, 24);
+            this.MenuFile.Size = new System.Drawing.Size(53, 26);
             this.MenuFile.Text = "文件";
             // 
             // SaveReceiveDataToFileToolStripMenuItem
@@ -109,8 +123,10 @@
             // 
             // MenuTools
             // 
+            this.MenuTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.asynTimeToolStripMenuItem});
             this.MenuTools.Name = "MenuTools";
-            this.MenuTools.Size = new System.Drawing.Size(53, 24);
+            this.MenuTools.Size = new System.Drawing.Size(53, 26);
             this.MenuTools.Text = "工具";
             // 
             // MenuSetting
@@ -118,7 +134,7 @@
             this.MenuSetting.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ResetPortConfToolStripMenuItem});
             this.MenuSetting.Name = "MenuSetting";
-            this.MenuSetting.Size = new System.Drawing.Size(54, 24);
+            this.MenuSetting.Size = new System.Drawing.Size(54, 26);
             this.MenuSetting.Text = "设置";
             // 
             // ResetPortConfToolStripMenuItem
@@ -133,7 +149,7 @@
             this.MenuIHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AboutToolStripMenuItem});
             this.MenuIHelp.Name = "MenuIHelp";
-            this.MenuIHelp.Size = new System.Drawing.Size(53, 24);
+            this.MenuIHelp.Size = new System.Drawing.Size(53, 26);
             this.MenuIHelp.Text = "帮助";
             // 
             // AboutToolStripMenuItem
@@ -160,11 +176,22 @@
             // toolStrip1
             // 
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.toolStrip1.Location = new System.Drawing.Point(0, 28);
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton1});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 30);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1177, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(1177, 31);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(29, 28);
+            this.toolStripButton1.Text = "toolStripButton1";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // groupBoxSerialPortSetting
             // 
@@ -298,16 +325,16 @@
             // textBoxReceive
             // 
             this.textBoxReceive.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.textBoxReceive.Location = new System.Drawing.Point(254, 136);
+            this.textBoxReceive.Location = new System.Drawing.Point(286, 597);
             this.textBoxReceive.Multiline = true;
             this.textBoxReceive.Name = "textBoxReceive";
             this.textBoxReceive.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxReceive.Size = new System.Drawing.Size(375, 92);
+            this.textBoxReceive.Size = new System.Drawing.Size(774, 62);
             this.textBoxReceive.TabIndex = 0;
             // 
             // buttonClearRecData
             // 
-            this.buttonClearRecData.Location = new System.Drawing.Point(550, 234);
+            this.buttonClearRecData.Location = new System.Drawing.Point(1080, 614);
             this.buttonClearRecData.Name = "buttonClearRecData";
             this.buttonClearRecData.Size = new System.Drawing.Size(70, 38);
             this.buttonClearRecData.TabIndex = 1;
@@ -331,7 +358,7 @@
             this.textBoxSend.Location = new System.Drawing.Point(3, 23);
             this.textBoxSend.MaxLength = 256;
             this.textBoxSend.Name = "textBoxSend";
-            this.textBoxSend.Size = new System.Drawing.Size(274, 27);
+            this.textBoxSend.Size = new System.Drawing.Size(168, 27);
             this.textBoxSend.TabIndex = 0;
             this.textBoxSend.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxSend_KeyDown);
             // 
@@ -341,18 +368,18 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxSendData.Controls.Add(this.textBoxSend);
-            this.groupBoxSendData.Location = new System.Drawing.Point(254, 53);
+            this.groupBoxSendData.Location = new System.Drawing.Point(16, 587);
             this.groupBoxSendData.Name = "groupBoxSendData";
-            this.groupBoxSendData.Size = new System.Drawing.Size(290, 62);
+            this.groupBoxSendData.Size = new System.Drawing.Size(191, 72);
             this.groupBoxSendData.TabIndex = 8;
             this.groupBoxSendData.TabStop = false;
-            this.groupBoxSendData.Text = "直接输入命令";
+            this.groupBoxSendData.Text = "调试窗口";
             // 
             // buttonSendData
             // 
-            this.buttonSendData.Location = new System.Drawing.Point(550, 76);
+            this.buttonSendData.Location = new System.Drawing.Point(213, 614);
             this.buttonSendData.Name = "buttonSendData";
-            this.buttonSendData.Size = new System.Drawing.Size(85, 27);
+            this.buttonSendData.Size = new System.Drawing.Size(51, 27);
             this.buttonSendData.TabIndex = 1;
             this.buttonSendData.Text = "发送";
             this.buttonSendData.UseVisualStyleBackColor = true;
@@ -360,7 +387,7 @@
             // 
             // ReadDataButton
             // 
-            this.ReadDataButton.Location = new System.Drawing.Point(12, 426);
+            this.ReadDataButton.Location = new System.Drawing.Point(12, 398);
             this.ReadDataButton.Name = "ReadDataButton";
             this.ReadDataButton.Size = new System.Drawing.Size(210, 51);
             this.ReadDataButton.TabIndex = 15;
@@ -370,7 +397,7 @@
             // 
             // CloseSerialButton
             // 
-            this.CloseSerialButton.Location = new System.Drawing.Point(12, 483);
+            this.CloseSerialButton.Location = new System.Drawing.Point(12, 500);
             this.CloseSerialButton.Name = "CloseSerialButton";
             this.CloseSerialButton.Size = new System.Drawing.Size(210, 54);
             this.CloseSerialButton.TabIndex = 17;
@@ -378,38 +405,104 @@
             this.CloseSerialButton.UseVisualStyleBackColor = true;
             this.CloseSerialButton.Click += new System.EventHandler(this.CloseSerialButton_Click);
             // 
-            // AsyncButton
-            // 
-            this.AsyncButton.Enabled = false;
-            this.AsyncButton.Location = new System.Drawing.Point(12, 377);
-            this.AsyncButton.Name = "AsyncButton";
-            this.AsyncButton.Size = new System.Drawing.Size(210, 43);
-            this.AsyncButton.TabIndex = 18;
-            this.AsyncButton.Text = "同步时间";
-            this.AsyncButton.UseVisualStyleBackColor = true;
-            this.AsyncButton.Click += new System.EventHandler(this.Asyncbutton_Click);
-            // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
             // 
-            // richTextBox1
+            // chart1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(254, 278);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(375, 97);
-            this.richTextBox1.TabIndex = 20;
-            this.richTextBox1.Text = "";
+            this.chart1.BorderlineColor = System.Drawing.Color.LightGray;
+            chartArea1.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea1);
+            legend1.Enabled = false;
+            legend1.Name = "Legend1";
+            this.chart1.Legends.Add(legend1);
+            this.chart1.Location = new System.Drawing.Point(299, 49);
+            this.chart1.Name = "chart1";
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series1.Color = System.Drawing.Color.Red;
+            series1.Legend = "Legend1";
+            series1.LegendText = "温度";
+            series1.MarkerBorderColor = System.Drawing.Color.Black;
+            series1.MarkerColor = System.Drawing.Color.Black;
+            series1.Name = "Series1";
+            series1.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Single;
+            this.chart1.Series.Add(series1);
+            this.chart1.Size = new System.Drawing.Size(851, 260);
+            this.chart1.TabIndex = 21;
+            this.chart1.Text = "chart1";
+            this.chart1.Click += new System.EventHandler(this.chart1_Click);
+            // 
+            // chart2
+            // 
+            chartArea2.Name = "ChartArea1";
+            this.chart2.ChartAreas.Add(chartArea2);
+            legend2.Enabled = false;
+            legend2.Name = "Legend1";
+            this.chart2.Legends.Add(legend2);
+            this.chart2.Location = new System.Drawing.Point(299, 315);
+            this.chart2.Name = "chart2";
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            series2.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series2.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Single;
+            this.chart2.Series.Add(series2);
+            this.chart2.Size = new System.Drawing.Size(851, 267);
+            this.chart2.TabIndex = 22;
+            this.chart2.Text = "chart2";
+            this.chart2.Click += new System.EventHandler(this.chart2_Click);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Microsoft YaHei", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label6.Location = new System.Drawing.Point(231, 49);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(62, 31);
+            this.label6.TabIndex = 23;
+            this.label6.Text = "温度";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Microsoft YaHei", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label7.Location = new System.Drawing.Point(231, 315);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(62, 31);
+            this.label7.TabIndex = 24;
+            this.label7.Text = "湿度";
+            // 
+            // asynTimeToolStripMenuItem
+            // 
+            this.asynTimeToolStripMenuItem.Name = "asynTimeToolStripMenuItem";
+            this.asynTimeToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.asynTimeToolStripMenuItem.Text = "AsynTime";
+            this.asynTimeToolStripMenuItem.Click += new System.EventHandler(this.asynTimeToolStripMenuItem_Click);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(15, 464);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(0, 20);
+            this.label8.TabIndex = 25;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1177, 671);
-            this.Controls.Add(this.richTextBox1);
-            this.Controls.Add(this.AsyncButton);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.chart2);
+            this.Controls.Add(this.chart1);
             this.Controls.Add(this.CloseSerialButton);
             this.Controls.Add(this.ReadDataButton);
             this.Controls.Add(this.textBoxReceive);
@@ -426,14 +519,18 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "MainForm";
-            this.Text = "串口调试软件";
+            this.Text = "温湿度记录仪";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.groupBoxSerialPortSetting.ResumeLayout(false);
             this.groupBoxSerialPortSetting.PerformLayout();
             this.groupBoxSendData.ResumeLayout(false);
             this.groupBoxSendData.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chart2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -448,11 +545,6 @@
         private System.Windows.Forms.ToolStripMenuItem MenuIHelp;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.GroupBox groupBoxSerialPortSetting;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox comboBoxStopBit;
         private System.Windows.Forms.ComboBox comboBoxCheckBit;
         private System.Windows.Forms.ComboBox comboBoxDataBit;
@@ -473,9 +565,19 @@
         private System.Windows.Forms.Button buttonSendData;
         private System.Windows.Forms.Button ReadDataButton;
         private System.Windows.Forms.Button CloseSerialButton;
-        private System.Windows.Forms.Button AsyncButton;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chart2;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.ToolStripMenuItem asynTimeToolStripMenuItem;
+        private System.Windows.Forms.Label label8;
     }
 }
 
