@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -16,16 +17,22 @@ namespace SerialCom
 
     public partial class MainForm : Form
     {
+        public static AutoResetEvent autoReadDataConfirmedEvent = new AutoResetEvent(false);
         public delegate void InvokeSerialSendText(String sText);
+        public delegate void InvokeRefreshData(String sText);
+        public delegate void InvokeLockReadDataButton(bool bLockButton);
         //实例化串口对象
         SerialPort serialPort = new SerialPort();
 
         String saveDataFile = null;
         FileStream saveDataFS = null;
+        List<String> listString;
+        
 
         public MainForm()
         {
             InitializeComponent();
+            listString = new List<String>();
         }
 
 
@@ -101,7 +108,6 @@ namespace SerialCom
             //设置数据读取超时为1秒
             serialPort.ReadTimeout = 1000;
             serialPort.Close();
-
             buttonSendData.Enabled = false;
 
         }
@@ -122,8 +128,12 @@ namespace SerialCom
                 String input = "";
                 do {
                     input = serialPort.ReadLine();
+                    listString.Add(input);
                     textBoxReceive.Text += input + "\r\n";
                 } while (serialPort.BytesToRead > 0);
+
+                autoReadDataConfirmedEvent.Set();
+
                 // save data to file
                 textBoxReceive.SelectionStart = textBoxReceive.Text.Length;
                 textBoxReceive.ScrollToCaret();//滚动到光标处
@@ -266,13 +276,13 @@ namespace SerialCom
 
         private void Asyncbutton_Click(object sender, EventArgs e)
         {
-            
-            ThreadStart threadstartSetClock = new ThreadStart(SetClock);
-            Thread threadSetClock = new Thread(threadstartSetClock);
+            Thread threadSetClock = new Thread(new ThreadStart(SetClock));
             threadSetClock.Start();
+            
         }
 
-        private void SetClock(){
+        private void SetClock()
+        {
             System.DateTime currentTime = new System.DateTime();
             currentTime = System.DateTime.Now;
             InvokeSerialSendText invokeSerialSendText = new InvokeSerialSendText(SendTextToSerial);
@@ -282,6 +292,11 @@ namespace SerialCom
                     + " " + currentTime.Hour
                     + " " + currentTime.Minute
                     + " " + currentTime.Second });
+            if (autoReadDataConfirmedEvent.WaitOne())
+            {
+                listString.Clear();
+            }
+
         }
 
         private void SendTextToSerial(String iText)
@@ -400,5 +415,83 @@ namespace SerialCom
         {
             CloseSerial();
         }
+
+        private void ReadDataButton_Click(object sender, EventArgs e)
+        {
+            Thread threadReadData = new Thread(new ThreadStart(readData));
+            threadReadData.Start();
+            
+        }
+
+        private void readData()
+        {
+            int read_pointer = 0;
+            int count = 0;
+
+            InvokeLockReadDataButton invokeLockReadDataButton = new InvokeLockReadDataButton(lockReadDataButton);
+            this.BeginInvoke(invokeLockReadDataButton, new Object[] { true });
+
+            InvokeSerialSendText invokeSerialSendText = new InvokeSerialSendText(SendTextToSerial);
+            this.BeginInvoke(invokeSerialSendText, new Object[] { "POINT" });
+            if (autoReadDataConfirmedEvent.WaitOne())
+            {
+                string pattern = @"The current write_pointer is:";
+                string result = listString.Find(s => Regex.IsMatch(s, pattern));
+                if (result != null)
+                {
+                    string[] parts = result.Split(':');
+                    read_pointer = Convert.ToInt32(parts[1]);
+                    InvokeRefreshData invokeRefreshData = new InvokeRefreshData(refreshData);
+                    this.BeginInvoke(invokeRefreshData, new object[] { "记录仪有" + read_pointer.ToString() + "条信息" });
+
+                    this.BeginInvoke(invokeSerialSendText, new Object[] { "READ 0" });
+                    if (autoReadDataConfirmedEvent.WaitOne())
+                    {
+                        listString.Clear();
+                    }
+                    for (int i = 0; i < read_pointer; i = i + 8)
+                    {
+                        this.BeginInvoke(invokeSerialSendText, new Object[] { "READ" });
+                        if (autoReadDataConfirmedEvent.WaitOne())
+                        {
+                            string pattern2 = @"^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}";
+                            listString = listString.FindAll(s => Regex.IsMatch(s, pattern2));
+                            foreach (string s in listString)
+                            {
+                                count++;
+                                string[] log_parts = s.Split(' ');
+                                if (log_parts.Count() >= 4)
+                                {
+                                    System.DateTime logTime = new System.DateTime();
+                                    logTime = Convert.ToDateTime(log_parts[0] + " " + log_parts[1]);
+                                    float temperature = Convert.ToSingle(log_parts[2]);
+                                    float moisture = Convert.ToSingle(log_parts[3]);
+
+                                    InvokeRefreshData invokeRefreshData2 = new InvokeRefreshData(refreshData);
+                                    this.BeginInvoke(invokeRefreshData2, new object[] { "Line " + count + "->" + logTime.ToString() + temperature.ToString() + " " + moisture.ToString() });
+                                }
+                            }
+                            listString.Clear();
+                            
+                        }
+                    }
+                    
+                }                
+            }
+            this.BeginInvoke(invokeLockReadDataButton, new Object[] { false });
+        }
+
+        private void lockReadDataButton(bool bLockButton) 
+        {
+
+            ReadDataButton.Enabled = !bLockButton;
+        }
+
+        private void refreshData(String sText)
+        {       
+            richTextBox1.Text += sText + "\r\n";
+            richTextBox1.SelectionStart = richTextBox1.Text.Length;
+            richTextBox1.ScrollToCaret();//滚动到光标处
+        } 
     }
 }

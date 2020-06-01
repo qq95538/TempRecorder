@@ -317,8 +317,6 @@ void formatSD(){
 }
 
 void query_write_pointer(){
-  Serial.println("XXXX(Data Logged)XXXX.__(Empty Space)___");
-  Serial.println("                     ^ ");
   Serial.print("The current write_pointer is:");
   Serial.println(write_pointer.ul);
 }

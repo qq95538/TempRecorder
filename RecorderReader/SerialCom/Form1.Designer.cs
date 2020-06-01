@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.MenuFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -62,6 +63,8 @@
             this.ReadDataButton = new System.Windows.Forms.Button();
             this.CloseSerialButton = new System.Windows.Forms.Button();
             this.AsyncButton = new System.Windows.Forms.Button();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.menuStrip1.SuspendLayout();
             this.groupBoxSerialPortSetting.SuspendLayout();
             this.groupBoxSendData.SuspendLayout();
@@ -295,18 +298,18 @@
             // textBoxReceive
             // 
             this.textBoxReceive.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.textBoxReceive.Location = new System.Drawing.Point(260, 167);
+            this.textBoxReceive.Location = new System.Drawing.Point(254, 136);
             this.textBoxReceive.Multiline = true;
             this.textBoxReceive.Name = "textBoxReceive";
             this.textBoxReceive.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxReceive.Size = new System.Drawing.Size(875, 398);
+            this.textBoxReceive.Size = new System.Drawing.Size(375, 92);
             this.textBoxReceive.TabIndex = 0;
             // 
             // buttonClearRecData
             // 
-            this.buttonClearRecData.Location = new System.Drawing.Point(1010, 575);
+            this.buttonClearRecData.Location = new System.Drawing.Point(550, 234);
             this.buttonClearRecData.Name = "buttonClearRecData";
-            this.buttonClearRecData.Size = new System.Drawing.Size(104, 38);
+            this.buttonClearRecData.Size = new System.Drawing.Size(70, 38);
             this.buttonClearRecData.TabIndex = 1;
             this.buttonClearRecData.Text = "清空";
             this.buttonClearRecData.UseVisualStyleBackColor = true;
@@ -328,7 +331,7 @@
             this.textBoxSend.Location = new System.Drawing.Point(3, 23);
             this.textBoxSend.MaxLength = 256;
             this.textBoxSend.Name = "textBoxSend";
-            this.textBoxSend.Size = new System.Drawing.Size(781, 27);
+            this.textBoxSend.Size = new System.Drawing.Size(274, 27);
             this.textBoxSend.TabIndex = 0;
             this.textBoxSend.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxSend_KeyDown);
             // 
@@ -338,16 +341,16 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxSendData.Controls.Add(this.textBoxSend);
-            this.groupBoxSendData.Location = new System.Drawing.Point(254, 90);
+            this.groupBoxSendData.Location = new System.Drawing.Point(254, 53);
             this.groupBoxSendData.Name = "groupBoxSendData";
-            this.groupBoxSendData.Size = new System.Drawing.Size(790, 102);
+            this.groupBoxSendData.Size = new System.Drawing.Size(290, 62);
             this.groupBoxSendData.TabIndex = 8;
             this.groupBoxSendData.TabStop = false;
             this.groupBoxSendData.Text = "直接输入命令";
             // 
             // buttonSendData
             // 
-            this.buttonSendData.Location = new System.Drawing.Point(1050, 113);
+            this.buttonSendData.Location = new System.Drawing.Point(550, 76);
             this.buttonSendData.Name = "buttonSendData";
             this.buttonSendData.Size = new System.Drawing.Size(85, 27);
             this.buttonSendData.TabIndex = 1;
@@ -363,6 +366,7 @@
             this.ReadDataButton.TabIndex = 15;
             this.ReadDataButton.Text = "取回记录";
             this.ReadDataButton.UseVisualStyleBackColor = true;
+            this.ReadDataButton.Click += new System.EventHandler(this.ReadDataButton_Click);
             // 
             // CloseSerialButton
             // 
@@ -385,11 +389,26 @@
             this.AsyncButton.UseVisualStyleBackColor = true;
             this.AsyncButton.Click += new System.EventHandler(this.Asyncbutton_Click);
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
+            // 
+            // richTextBox1
+            // 
+            this.richTextBox1.Location = new System.Drawing.Point(254, 278);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(375, 97);
+            this.richTextBox1.TabIndex = 20;
+            this.richTextBox1.Text = "";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1177, 671);
+            this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.AsyncButton);
             this.Controls.Add(this.CloseSerialButton);
             this.Controls.Add(this.ReadDataButton);
@@ -455,6 +474,8 @@
         private System.Windows.Forms.Button ReadDataButton;
         private System.Windows.Forms.Button CloseSerialButton;
         private System.Windows.Forms.Button AsyncButton;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.RichTextBox richTextBox1;
     }
 }
 
