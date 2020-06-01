@@ -73,7 +73,7 @@ namespace SerialCom
             {
                 comboBoxBaudRate.Items.Add(s);
             }
-            comboBoxBaudRate.SelectedIndex = 0;
+            comboBoxBaudRate.SelectedIndex = 1;
 
             /*------数据位设置-------*/
             string[] dataBit = { "5", "6", "7", "8" };
@@ -140,7 +140,7 @@ namespace SerialCom
                 do {
                     input = serialPort.ReadLine();
                     listString.Add(input);
-                    textBoxReceive.Text = input + "\r\n";
+                    textBoxReceive.Text += input + "\r\n";
                 } while (serialPort.BytesToRead > 0);
 
                 autoReadDataConfirmedEvent.Set();
