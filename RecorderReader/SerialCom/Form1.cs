@@ -36,14 +36,14 @@ namespace SerialCom
         FileStream saveDataFS = null;
         List<String> listString;
         List<LogLine> listLogLine;
-        int current_log;
+
 
         public MainForm()
         {
             InitializeComponent();
             listString = new List<String>();
             listLogLine = new List<LogLine>();
-            current_log = 0;
+
         }
 
 
@@ -64,8 +64,11 @@ namespace SerialCom
             {
                 comboBoxCom.Items.Add(s);
             }
-            //设置默认串口选项
-            comboBoxCom.SelectedIndex = 0;
+            if(comboBoxCom.Items.Count > 0)
+            {
+                comboBoxCom.SelectedIndex = comboBoxCom.Items.Count - 1;
+            }
+
 
             /*------波特率设置-------*/
             string[] baudRate = { "9600", "19200", "38400", "57600", "115200" };
@@ -128,7 +131,7 @@ namespace SerialCom
         private void buttonOpenCloseCom_Click(object sender, EventArgs e)
         {
             OpenSerial();
-            asynTimeToolStripMenuItem.Enabled = true;
+            buttonCleanSD.Enabled = true;
         }
 
         //接收数据
@@ -142,8 +145,11 @@ namespace SerialCom
                     listString.Add(input);
                     textBoxReceive.Text += input + "\r\n";
                 } while (serialPort.BytesToRead > 0);
-
-                autoReadDataConfirmedEvent.Set();
+                if (listString.Count > 0)
+                {
+                    autoReadDataConfirmedEvent.Set();
+                }
+                
 
                 // save data to file
                 textBoxReceive.SelectionStart = textBoxReceive.Text.Length;
@@ -218,8 +224,10 @@ namespace SerialCom
             }
 
             //设置默认串口
-            comboBoxCom.SelectedIndex = 0;
-            comboBoxBaudRate.SelectedIndex = 0;
+            if(comboBoxCom.Items.Count > 0) {
+                comboBoxCom.SelectedIndex = comboBoxCom.Items.Count - 1;
+            }
+            comboBoxBaudRate.SelectedIndex = 1;
             comboBoxDataBit.SelectedIndex = 3;
             comboBoxCheckBit.SelectedIndex = 0;
             comboBoxStopBit.SelectedIndex = 0;
@@ -287,7 +295,7 @@ namespace SerialCom
 
 
 
-        private void SetClock()
+        private void setClockAndCleanSD()
         {
             System.DateTime currentTime = new System.DateTime();
             currentTime = System.DateTime.Now;
@@ -301,6 +309,11 @@ namespace SerialCom
             if (autoReadDataConfirmedEvent.WaitOne())
             {
                 listString.Clear();
+                this.BeginInvoke(invokeSerialSendText, new Object[] { "DEL" });
+                if (autoReadDataConfirmedEvent.WaitOne())
+                {
+                    this.BeginInvoke(invokeSerialSendText, new Object[] { "NEW" });
+                }
             }
 
         }
@@ -407,7 +420,7 @@ namespace SerialCom
                 comboBoxStopBit.Enabled = true;
                 buttonSendData.Enabled = false;
                 Button_Refresh.Enabled = true;
-                asynTimeToolStripMenuItem.Enabled = false;
+                buttonCleanSD.Enabled = false;
                 buttonOpenCloseCom.Text = "连接记录仪";
                 if (saveDataFS != null)
                 {
@@ -493,19 +506,13 @@ namespace SerialCom
         {
 
             ReadDataButton.Enabled = !bLockButton;
+            buttonCleanSD.Enabled = !bLockButton;
         }
 
         private void refreshData(int index, DateTime time, float temperature, float moisture)
         {      
             chart1.Series[0].Points.AddXY(index, temperature);
             chart2.Series[0].Points.AddXY(index, moisture);
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-            
-            chart1.Series[0].Points.AddXY(listLogLine[current_log].index, listLogLine[current_log++].temperature);
         }
 
         private void chart1_Click(object sender, EventArgs e)
@@ -517,7 +524,7 @@ namespace SerialCom
         {
             int min_temperature;
             int min_moisture;
-            if (listLogLine == null)
+            if (listLogLine == null || listLogLine.Count == 0)
             {
                 min_temperature = 25;
                 min_moisture = 50;
@@ -529,9 +536,9 @@ namespace SerialCom
             }
             min_temperature = listLogLine.Aggregate(min_temperature, (acc, x) => Math.Min(acc, Convert.ToInt32(x.temperature)));
             min_moisture = listLogLine.Aggregate(min_moisture, (acc, x) => Math.Min(acc, Convert.ToInt32(x.moisture)));
-            chart1.ChartAreas[0].AxisY.Minimum = min_temperature;
-            chart2.ChartAreas[0].AxisY.Minimum = min_moisture;
-            label8.Text = "取回记录共计： " + listLogLine.Count + "条";
+            //chart1.ChartAreas[0].AxisY.Minimum = min_temperature;
+            //chart2.ChartAreas[0].AxisY.Minimum = min_moisture;
+            label9.Text = "取回记录共计： " + listLogLine.Count + "条";
 
         }
 
@@ -540,15 +547,19 @@ namespace SerialCom
             adjustChart();
         }
 
-        private void toolStripButton1_Click(object sender, EventArgs e)
+        private void buttonCleanSD_Click(object sender, EventArgs e)
         {
+            Thread threadSetClockAndClearSD = new Thread(new ThreadStart(setClockAndCleanSD));
+            threadSetClockAndClearSD.Start();
 
         }
 
-        private void asynTimeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void debugToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread threadSetClock = new Thread(new ThreadStart(SetClock));
-            threadSetClock.Start();
+            groupBoxSendData.Visible = !groupBoxSendData.Visible;
+            textBoxReceive.Visible = !textBoxReceive.Visible;
+            buttonSendData.Visible = !buttonSendData.Visible;
+            buttonClearRecData.Visible = !buttonClearRecData.Visible;
         }
     }
 }

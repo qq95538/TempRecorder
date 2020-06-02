@@ -47,8 +47,6 @@
             this.AboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.AuthorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ContributorSylvesterLiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.groupBoxSerialPortSetting = new System.Windows.Forms.GroupBox();
             this.comboBoxStopBit = new System.Windows.Forms.ComboBox();
             this.comboBoxCheckBit = new System.Windows.Forms.ComboBox();
@@ -74,10 +72,10 @@
             this.chart2 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.asynTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label8 = new System.Windows.Forms.Label();
+            this.buttonCleanSD = new System.Windows.Forms.Button();
+            this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label9 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
             this.groupBoxSerialPortSetting.SuspendLayout();
             this.groupBoxSendData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
@@ -94,7 +92,7 @@
             this.MenuIHelp});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1177, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(1177, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -104,7 +102,7 @@
             this.SaveReceiveDataToFileToolStripMenuItem,
             this.ExitToolStripMenuItem});
             this.MenuFile.Name = "MenuFile";
-            this.MenuFile.Size = new System.Drawing.Size(53, 26);
+            this.MenuFile.Size = new System.Drawing.Size(53, 24);
             this.MenuFile.Text = "文件";
             // 
             // SaveReceiveDataToFileToolStripMenuItem
@@ -124,9 +122,9 @@
             // MenuTools
             // 
             this.MenuTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.asynTimeToolStripMenuItem});
+            this.debugToolStripMenuItem});
             this.MenuTools.Name = "MenuTools";
-            this.MenuTools.Size = new System.Drawing.Size(53, 26);
+            this.MenuTools.Size = new System.Drawing.Size(53, 24);
             this.MenuTools.Text = "工具";
             // 
             // MenuSetting
@@ -134,13 +132,13 @@
             this.MenuSetting.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ResetPortConfToolStripMenuItem});
             this.MenuSetting.Name = "MenuSetting";
-            this.MenuSetting.Size = new System.Drawing.Size(54, 26);
+            this.MenuSetting.Size = new System.Drawing.Size(54, 24);
             this.MenuSetting.Text = "设置";
             // 
             // ResetPortConfToolStripMenuItem
             // 
             this.ResetPortConfToolStripMenuItem.Name = "ResetPortConfToolStripMenuItem";
-            this.ResetPortConfToolStripMenuItem.Size = new System.Drawing.Size(183, 26);
+            this.ResetPortConfToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.ResetPortConfToolStripMenuItem.Text = "重置串口设置";
             this.ResetPortConfToolStripMenuItem.Click += new System.EventHandler(this.ResetPortConfToolStripMenuItem_Click);
             // 
@@ -149,7 +147,7 @@
             this.MenuIHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AboutToolStripMenuItem});
             this.MenuIHelp.Name = "MenuIHelp";
-            this.MenuIHelp.Size = new System.Drawing.Size(53, 26);
+            this.MenuIHelp.Size = new System.Drawing.Size(53, 24);
             this.MenuIHelp.Text = "帮助";
             // 
             // AboutToolStripMenuItem
@@ -172,26 +170,6 @@
             this.ContributorSylvesterLiToolStripMenuItem.Name = "ContributorSylvesterLiToolStripMenuItem";
             this.ContributorSylvesterLiToolStripMenuItem.Size = new System.Drawing.Size(219, 26);
             this.ContributorSylvesterLiToolStripMenuItem.Text = "贡献者：Sylvester Li";
-            // 
-            // toolStrip1
-            // 
-            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButton1});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 30);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(1177, 31);
-            this.toolStrip1.TabIndex = 1;
-            this.toolStrip1.Text = "toolStrip1";
-            // 
-            // toolStripButton1
-            // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(29, 28);
-            this.toolStripButton1.Text = "toolStripButton1";
-            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // groupBoxSerialPortSetting
             // 
@@ -325,7 +303,7 @@
             // textBoxReceive
             // 
             this.textBoxReceive.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.textBoxReceive.Location = new System.Drawing.Point(286, 597);
+            this.textBoxReceive.Location = new System.Drawing.Point(299, 610);
             this.textBoxReceive.Multiline = true;
             this.textBoxReceive.Name = "textBoxReceive";
             this.textBoxReceive.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -387,7 +365,7 @@
             // 
             // ReadDataButton
             // 
-            this.ReadDataButton.Location = new System.Drawing.Point(12, 398);
+            this.ReadDataButton.Location = new System.Drawing.Point(12, 377);
             this.ReadDataButton.Name = "ReadDataButton";
             this.ReadDataButton.Size = new System.Drawing.Size(210, 51);
             this.ReadDataButton.TabIndex = 15;
@@ -397,7 +375,7 @@
             // 
             // CloseSerialButton
             // 
-            this.CloseSerialButton.Location = new System.Drawing.Point(12, 500);
+            this.CloseSerialButton.Location = new System.Drawing.Point(12, 491);
             this.CloseSerialButton.Name = "CloseSerialButton";
             this.CloseSerialButton.Size = new System.Drawing.Size(210, 54);
             this.CloseSerialButton.TabIndex = 17;
@@ -419,7 +397,7 @@
             legend1.Enabled = false;
             legend1.Name = "Legend1";
             this.chart1.Legends.Add(legend1);
-            this.chart1.Location = new System.Drawing.Point(299, 49);
+            this.chart1.Location = new System.Drawing.Point(299, 61);
             this.chart1.Name = "chart1";
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
@@ -444,7 +422,7 @@
             legend2.Enabled = false;
             legend2.Name = "Legend1";
             this.chart2.Legends.Add(legend2);
-            this.chart2.Location = new System.Drawing.Point(299, 315);
+            this.chart2.Location = new System.Drawing.Point(299, 327);
             this.chart2.Name = "chart2";
             series2.ChartArea = "ChartArea1";
             series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
@@ -462,7 +440,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft YaHei", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label6.Location = new System.Drawing.Point(231, 49);
+            this.label6.Location = new System.Drawing.Point(231, 61);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(62, 31);
             this.label6.TabIndex = 23;
@@ -472,33 +450,46 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft YaHei", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label7.Location = new System.Drawing.Point(231, 315);
+            this.label7.Location = new System.Drawing.Point(231, 327);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(62, 31);
             this.label7.TabIndex = 24;
             this.label7.Text = "湿度";
             // 
-            // asynTimeToolStripMenuItem
+            // buttonCleanSD
             // 
-            this.asynTimeToolStripMenuItem.Name = "asynTimeToolStripMenuItem";
-            this.asynTimeToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.asynTimeToolStripMenuItem.Text = "AsynTime";
-            this.asynTimeToolStripMenuItem.Click += new System.EventHandler(this.asynTimeToolStripMenuItem_Click);
+            this.buttonCleanSD.Location = new System.Drawing.Point(12, 434);
+            this.buttonCleanSD.Name = "buttonCleanSD";
+            this.buttonCleanSD.Size = new System.Drawing.Size(210, 51);
+            this.buttonCleanSD.TabIndex = 26;
+            this.buttonCleanSD.Text = "清空记录";
+            this.buttonCleanSD.UseVisualStyleBackColor = true;
+            this.buttonCleanSD.Click += new System.EventHandler(this.buttonCleanSD_Click);
             // 
-            // label8
+            // debugToolStripMenuItem
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(15, 464);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(0, 20);
-            this.label8.TabIndex = 25;
+            this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
+            this.debugToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.debugToolStripMenuItem.Text = "Debug";
+            this.debugToolStripMenuItem.Click += new System.EventHandler(this.debugToolStripMenuItem_Click);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft YaHei", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label9.Location = new System.Drawing.Point(305, 27);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(134, 31);
+            this.label9.TabIndex = 27;
+            this.label9.Text = "记录条数：";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1177, 671);
-            this.Controls.Add(this.label8);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.buttonCleanSD);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.chart2);
@@ -512,7 +503,6 @@
             this.Controls.Add(this.groupBoxSendData);
             this.Controls.Add(this.buttonOpenCloseCom);
             this.Controls.Add(this.groupBoxSerialPortSetting);
-            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("Microsoft YaHei", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -523,8 +513,6 @@
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
             this.groupBoxSerialPortSetting.ResumeLayout(false);
             this.groupBoxSerialPortSetting.PerformLayout();
             this.groupBoxSendData.ResumeLayout(false);
@@ -543,7 +531,6 @@
         private System.Windows.Forms.ToolStripMenuItem MenuTools;
         private System.Windows.Forms.ToolStripMenuItem MenuSetting;
         private System.Windows.Forms.ToolStripMenuItem MenuIHelp;
-        private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.GroupBox groupBoxSerialPortSetting;
         private System.Windows.Forms.ComboBox comboBoxStopBit;
         private System.Windows.Forms.ComboBox comboBoxCheckBit;
@@ -575,9 +562,9 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.ToolStripButton toolStripButton1;
-        private System.Windows.Forms.ToolStripMenuItem asynTimeToolStripMenuItem;
-        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button buttonCleanSD;
+        private System.Windows.Forms.ToolStripMenuItem debugToolStripMenuItem;
+        private System.Windows.Forms.Label label9;
     }
 }
 
